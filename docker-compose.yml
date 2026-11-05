@@ -1,0 +1,138 @@
+# =============================================================================
+# UrbanTwin — full local stack
+# Per docs/CONTRACT.md §10 (deployment) and §3 (ports & runtimes).
+#
+# Usage:
+#   docker compose up --build
+#
+# After startup:
+#   Frontend : http://localhost:3000   (nginx, proxies /api and /ml)
+#   API      : http://localhost:8080/api/v1  (Swagger: http://localhost:8080/swagger-ui.html)
+#   ML       : http://localhost:8000/docs    (FastAPI)
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------- database
+  # PostGIS 3.4 on PostgreSQL 16 — stores zones/roads/sensors with
+  # geography(Point,4326) / geography(LineString,4326) columns.
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: urbantwin-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: urbantwin
+      POSTGRES_DB: urbantwin
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d urbantwin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - default
+
+  # ------------------------------------------------------------------- cache
+  # Redis is OPTIONAL for the API: on cache miss / connection failure the API
+  # degrades gracefully and queries Postgres directly (contract §3).
+  redis:
+    image: redis:7-alpine
+    container_name: urbantwin-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+
+  # ------------------------------------------------------------------- kafka
+  # Event backbone for sensor readings + twin updates. Single-node KRaft
+  # (no ZooKeeper). Auto-create topics enabled per contract §3.
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: urbantwin-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CLUSTER_ID: urbantwin-cluster-1
+    ports:
+      - "9092:9092"
+    networks:
+      - default
+
+  # ----------------------------------------------------------- api (Spring)
+  # Build context ./backend (multi-stage Maven Dockerfile). Waits for a
+  # healthy Postgres. app.seed.enabled=true seeds a minimal city so the app
+  # is never empty on first run (contract §11).
+  api:
+    build:
+      context: ./backend
+    image: urbantwin/api:latest
+    container_name: urbantwin-api
+    profiles: ["docker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/urbantwin
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: urbantwin
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_DATA_REDIS_HOST: redis
+      APP_ML_BASE_URL: http://ml:8000
+      APP_SEED_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+
+  # ----------------------------------------------------------- ml (FastAPI)
+  # Build context ./ml-service. No extra env needed — APP_ML_BASE_URL is
+  # configured on the API side.
+  ml:
+    build:
+      context: ./ml-service
+    image: urbantwin/ml:latest
+    container_name: urbantwin-ml
+    profiles: ["docker"]
+    ports:
+      - "8000:8000"
+    networks:
+      - default
+
+  # ----------------------------------------------------------- web (React)
+  # nginx serving the Vite production build; nginx.conf proxies /api and /ml
+  # so the browser never needs service hostnames.
+  web:
+    build:
+      context: ./frontend
+    image: urbantwin/web:latest
+    container_name: urbantwin-web
+    profiles: ["docker"]
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+    networks:
+      - default
+
+volumes:
+  pgdata:

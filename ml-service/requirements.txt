@@ -1,0 +1,11 @@
+# UrbanTwin ML service — base runtime (heuristic backend always works)
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pydantic>=2.7,<3
+
+# scikit-learn unlocks the "sklearn" backend (gradient-boosted regressors).
+# TensorFlow is intentionally NOT pinned here — it adds ~500 MB; install it
+# separately (pip install tensorflow) if you want the "tensorflow" backend.
+numpy>=1.26
+scikit-learn>=1.4
+joblib>=1.3

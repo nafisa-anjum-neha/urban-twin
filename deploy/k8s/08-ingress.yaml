@@ -1,0 +1,38 @@
+# Optional nginx ingress: one public URL for the full stack.
+# Requires an ingress controller, e.g.
+#   kind: extraPortMapping 80 -> localhost:8080, or minikube addons enable ingress.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: urbantwin
+  namespace: urbantwin
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 8m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: urbantwin.local
+      http:
+        paths:
+          # longest-prefix wins: API and ML in front of the SPA
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8080
+          - path: /ml
+            pathType: Prefix
+            backend:
+              service:
+                name: ml
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80

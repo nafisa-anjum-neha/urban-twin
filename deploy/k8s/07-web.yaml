@@ -1,0 +1,51 @@
+# React frontend served by the nginx image from ./frontend (contract §10).
+# Its baked nginx.conf proxies /api -> api:8080 and /ml -> ml:8000 — matching
+# the Service names declared in this release.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: urbantwin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: urbantwin/web:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: urbantwin
+spec:
+  type: NodePort
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30300

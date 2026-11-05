@@ -1,0 +1,24 @@
+# ── build artifacts ──────────────────────────────────────────────
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# ── python (ml-service) ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+ml-service/.venv/
+*.egg-info/
+
+# ── editors / OS ─────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ── logs / env ───────────────────────────────────────────────────
+*.log
+.env
+.env.*
+!.env.example

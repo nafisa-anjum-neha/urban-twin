@@ -1,0 +1,24 @@
+# UrbanTwin ML service — FastAPI + sklearn/heuristic backends (contract §10)
+FROM python:3.12-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app ./app
+COPY train.py .
+
+# Bake trained sklearn models into the image (best effort — the heuristic
+# backend takes over automatically when this fails or is skipped).
+RUN python train.py || echo "model training skipped — heuristic backend active"
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=4s --retries=3 \
+  CMD python -c "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/ml/v1/health')" || exit 1
+
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

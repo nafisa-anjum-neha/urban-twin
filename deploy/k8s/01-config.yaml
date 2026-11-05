@@ -1,0 +1,32 @@
+# Shared configuration for the UrbanTwin deployment.
+# Postgres credentials live in a Secret; everything else is non-sensitive and
+# sits in this ConfigMap (contract §10 — "configmaps for env").
+apiVersion: v1
+kind: Secret
+metadata:
+  name: urbantwin-db
+  namespace: urbantwin
+type: Opaque
+stringData:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: urbantwin
+  POSTGRES_DB: urbantwin
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: urbantwin-config
+  namespace: urbantwin
+data:
+  # --- backend (docker profile env vars, see application-docker.yml) -------
+  SPRING_PROFILES_ACTIVE: docker
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/urbantwin
+  SPRING_DATASOURCE_USERNAME: postgres
+  SPRING_DATASOURCE_PASSWORD: urbantwin
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_PORT: "6379"
+  APP_SEED_ENABLED: "true"
+  APP_ML_BASE_URL: http://ml:8000
+  # --- frontend (baked at build time by Vite) -------------------------------
+  VITE_API_URL: /api/v1

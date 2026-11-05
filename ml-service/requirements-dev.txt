@@ -1,0 +1,4 @@
+# Development / CI extras for the ML service
+-r requirements.txt
+pytest>=8,<9
+httpx>=0.27

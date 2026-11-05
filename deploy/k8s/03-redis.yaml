@@ -1,0 +1,47 @@
+# Redis — twin-state cache + pub/sub fan-out for the live overlay (contract §10).
+# The API degrades gracefully when Redis is absent, but in the full stack it
+# backs STOMWebSocket state sharing.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: urbantwin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+              name: redis
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: urbantwin
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      targetPort: 6379
