@@ -119,9 +119,15 @@ def wait_for_api(api: str, deadline_s: float = 180.0) -> bool:
 
 
 def discover(api: str) -> dict:
-    traffic = http_json("GET", f"{api}/api/v1/traffic/sensors")
-    drainage = http_json("GET", f"{api}/api/v1/drainage/sensors")
-    grids = http_json("GET", f"{api}/api/v1/energy/grids")
+    try:
+        traffic = http_json("GET", f"{api}/api/v1/traffic/sensors")
+        drainage = http_json("GET", f"{api}/api/v1/drainage/sensors")
+        grids = http_json("GET", f"{api}/api/v1/energy/grids")
+    except Exception as e:
+        print(f"[seed] cannot reach API at {api}: {e}", file=sys.stderr)
+        print("[seed] start the stack first (docker compose up --build) or pass "
+              "--wait-for-api to block until it is up", file=sys.stderr)
+        raise SystemExit(2)
 
     def active(items):
         return [s for s in items if s.get("status", "active") == "active" or s.get("status") is None]
@@ -137,7 +143,7 @@ def discover(api: str) -> dict:
         flush=True,
     )
     if not (catalogue["traffic"] or catalogue["drainage"] or catalogue["grids"]):
-        print("[seed] nothing discovered — did the app seed its data? "
+        print("[seed] nothing discovered - did the app seed its data? "
               "Set APP_SEED_ENABLED=true.", file=sys.stderr)
     return catalogue
 
@@ -278,11 +284,11 @@ def main() -> int:
         rain = weathersync(rng, state)
         state["rain_mm_h"] = rain
 
-        t = traffic_round(cat, hour, dow, rng, state, args.interval)
+        t = traffic_round(cat, hour, dow, rng, state, api, args.interval)
         d = drain_round(cat, rain, rng, state, api, args.interval)
         e = energy_round(cat, hour, dow, rng, state, api)
         print(f"[seed] round {round_no:04d} {dt:%H:%M:%S} rain={rain:5.1f} mm/h "
-              f"→ traffic {t}, drainage {d}, energy {e}", flush=True)
+              f"-> traffic {t}, drainage {d}, energy {e}", flush=True)
 
         if args.iterations and round_no >= args.iterations:
             break
