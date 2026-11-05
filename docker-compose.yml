@@ -57,9 +57,9 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -67,7 +67,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      CLUSTER_ID: urbantwin-cluster-1
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     ports:
       - "9092:9092"
     networks:
@@ -82,7 +82,6 @@ services:
       context: ./backend
     image: urbantwin/api:latest
     container_name: urbantwin-api
-    profiles: ["docker"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -95,7 +94,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/urbantwin
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: urbantwin
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SPRING_DATA_REDIS_HOST: redis
       APP_ML_BASE_URL: http://ml:8000
       APP_SEED_ENABLED: "true"
@@ -112,7 +111,6 @@ services:
       context: ./ml-service
     image: urbantwin/ml:latest
     container_name: urbantwin-ml
-    profiles: ["docker"]
     ports:
       - "8000:8000"
     networks:
@@ -126,7 +124,6 @@ services:
       context: ./frontend
     image: urbantwin/web:latest
     container_name: urbantwin-web
-    profiles: ["docker"]
     depends_on:
       - api
     ports:
