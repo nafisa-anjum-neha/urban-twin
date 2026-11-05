@@ -96,6 +96,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: urbantwin
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SPRING_DATA_REDIS_HOST: redis
+      SPRING_JPA_OPEN_IN_VIEW: "true"
       APP_ML_BASE_URL: http://ml:8000
       APP_SEED_ENABLED: "true"
     ports:

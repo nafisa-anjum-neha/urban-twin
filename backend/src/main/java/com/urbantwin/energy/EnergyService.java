@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Electricity grid telemetry, per-zone energy summary and asset inventory. */
 @Service
+@Transactional(readOnly = true)
 public class EnergyService {
 
     private final ElectricityGridRepository grids;
@@ -33,6 +35,7 @@ public class EnergyService {
 
     /* ------------------------------ ingest ------------------------------ */
 
+    @Transactional
     public EnergyDtos.GridReadingDto record(EnergyDtos.EnergyPayload payload) {
         UUID gridId = parse(payload.gridId(), "gridId");
         ElectricityGrid grid = grids.findById(gridId)

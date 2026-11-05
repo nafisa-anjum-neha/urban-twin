@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.urbantwin.traffic.CongestionHeuristic.indexOf;
 
@@ -20,6 +21,7 @@ import static com.urbantwin.traffic.CongestionHeuristic.indexOf;
  * prediction (ML service first, CongestionHeuristic fallback).
  */
 @Service
+@Transactional(readOnly = true)
 public class TrafficService {
 
     private final TrafficSensorRepository sensors;
@@ -39,6 +41,7 @@ public class TrafficService {
 
     /* ------------------------------ ingest ------------------------------ */
 
+    @Transactional
     public TrafficDtos.ReadingDto record(TrafficDtos.TrafficPayload payload) {
         UUID sensorId = parseId(payload.sensorId(), "sensorId");
         TrafficSensor sensor = sensors.findById(sensorId)

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.urbantwin.drainage.FloodHeuristic.projectedLevelCm;
 import static com.urbantwin.drainage.FloodHeuristic.riskForCm;
@@ -19,6 +20,7 @@ import static com.urbantwin.drainage.FloodHeuristic.scoreForCm;
 
 /** Drainage telemetry ingest and waterlogging prediction (ML first, heuristic fallback). */
 @Service
+@Transactional(readOnly = true)
 public class DrainageService {
 
     private final DrainageNetworkRepository networks;
@@ -43,6 +45,7 @@ public class DrainageService {
 
     /* ------------------------------ ingest ------------------------------ */
 
+    @Transactional
     public DrainageDtos.WaterReadingDto record(DrainageDtos.WaterPayload payload) {
         UUID sensorId = parse(payload.sensorId(), "sensorId");
         DrainageSensor sensor = sensors.findById(sensorId)
