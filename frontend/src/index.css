@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   Theme tokens — WHITE by default, BLACK via `html.dark` (Topbar toggle).
+   The entire chrome is built on the slate ramp, so we remap it per theme:
+   light mode inverts the luminance scale (near-white surfaces, near-black
+   ink) while accent hues (emerald/amber/sky) stay untouched.
+   ========================================================================== */
+:root {
+  /* space-separated RGB triplets — Tailwind composes alpha modifiers live */
+  --st-50: 14 22 38;        /* strongest ink       (replaces white chrome text) */
+  --st-100: 36 49 74;
+  --st-200: 51 65 85;       /* body text */
+  --st-300: 68 84 107;
+  --st-400: 92 107 131;
+  --st-500: 100 116 139;    /* muted text / icons */
+  --st-600: 139 151 168;
+  --st-700: 203 213 225;    /* input + strong borders */
+  --st-800: 230 235 242;    /* borders / hover fills */
+  --st-900: 246 248 251;    /* raised card fill */
+  --st-950: 255 255 255;    /* page background — WHITE */
+
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --surface-border: #e2e8f0;
+  --shadow-card: 0 1px 0 0 rgb(15 23 42 / 0.02) inset, 0 8px 24px -16px rgb(15 23 42 / 0.18);
+
+  --map-bg: #f2f5f9;
+  --chart-grid: #e2e8f0;
+  --chart-axis: #cbd5e1;
+  --chart-tick: #64748b;
+  --chart-tip-bg: #ffffff;
+  --chart-tip-border: #cbd5e1;
+}
+
+html.dark {
+  /* original BLACK chrome */
+  --st-50: 248 250 252;
+  --st-100: 241 245 249;
+  --st-200: 226 232 240;
+  --st-300: 203 213 225;
+  --st-400: 148 163 184;
+  --st-500: 100 116 139;
+  --st-600: 71 85 105;
+  --st-700: 51 65 85;
+  --st-800: 30 41 59;
+  --st-900: 15 23 42;
+  --st-950: 2 6 23;
+
+  --surface: #0f172a;
+  --surface-raised: #111c31;
+  --surface-border: #1e293b;
+  --shadow-card: 0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -12px rgb(0 0 0 / 0.6);
+
+  --map-bg: #0b1220;
+  --chart-grid: #1e293b;
+  --chart-axis: #334155;
+  --chart-tick: #94a3b8;
+  --chart-tip-bg: #0f172a;
+  --chart-tip-border: #334155;
+}
+
 html,
 body,
 #root {
@@ -13,35 +73,36 @@ body {
   font-feature-settings: 'cv02', 'cv03', 'cv04';
 }
 
-/* Leaflet theming over OSM raster tiles for the dark slate theme */
+/* Leaflet over OSM raster tiles — dimmed tiles only in DARK mode.
+   In light mode the raw OpenStreetMap rendering matches the white chrome. */
 .leaflet-container {
-  background: #0b1220;
+  background: var(--map-bg);
   font-family: inherit;
 }
-.leaflet-tile-pane {
+html.dark .leaflet-tile-pane {
   filter: brightness(0.72) contrast(1.08) saturate(0.8);
 }
 .leaflet-control-attribution,
 .leaflet-control-attribution a {
-  @apply bg-slate-900/80 text-[10px] text-slate-500;
+  @apply bg-slate-950/60 text-[10px] text-slate-500;
 }
 .leaflet-control-zoom {
   @apply border-slate-800;
 }
 .leaflet-control-zoom a {
-  @apply bg-slate-900/90 text-slate-300 border-slate-800;
+  @apply bg-slate-950/90 text-slate-200 border-slate-800;
 }
 .leaflet-control-zoom a:hover {
-  @apply bg-slate-800 text-white;
+  @apply bg-slate-900 text-slate-50;
 }
 .leaflet-popup-content-wrapper {
-  @apply rounded-xl border border-slate-700 bg-slate-900 text-slate-200 shadow-card;
+  @apply rounded-xl border border-slate-800 bg-slate-950 text-slate-200 shadow-card;
 }
 .leaflet-popup-tip {
-  @apply bg-slate-900 border-slate-700;
+  @apply bg-slate-950 border-slate-800;
 }
 
-/* Thin scrollbars to match the dark chrome */
+/* Thin scrollbars matching the active chrome */
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -56,19 +117,22 @@ body {
   @apply bg-slate-700;
 }
 
-/* Reusable dark-theme form/table primitives used across pages */
+/* Reusable form/table primitives used across pages (theme-aware via tokens) */
 @layer components {
   .input {
-    @apply w-full rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-slate-200 placeholder-slate-600 outline-none transition-colors focus:border-emerald-600 focus:bg-slate-900;
+    @apply w-full rounded-xl border border-slate-700 bg-slate-950/60 px-3 py-2 text-sm text-slate-200 placeholder-slate-500 outline-none transition-colors focus:border-emerald-600 focus:bg-slate-900/70;
   }
   .select {
     @apply rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-slate-300 outline-none transition-colors focus:border-emerald-600;
   }
   .button {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .button-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
   }
   .ticket {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-colors hover:border-slate-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-950 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-slate-50 disabled:cursor-not-allowed disabled:opacity-40;
   }
   .table {
     @apply w-full text-left text-sm;

@@ -102,7 +102,7 @@ export default function Simulation() {
             ].join(' ')}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-white">{s.icon} {s.label}</span>
+              <span className="text-sm font-semibold text-slate-50">{s.icon} {s.label}</span>
               {scenario === s.id && <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-dot" />}
             </div>
             <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{s.blurb}</p>

@@ -52,6 +52,6 @@ kubectl -n urbantwin get pods -w
 
 ## Notes
 
-* `APP_SEED_ENABLED=true` makes the API seed Bengaluru demo data into the fresh database on first boot; on subsequent restarts seeding is skipped automatically (entities already exist).
+* `APP_SEED_ENABLED=true` makes the API seed Dhaka demo data into the fresh database on first boot; on subsequent restarts seeding is skipped automatically (entities already exist).
 * Kafka runs in KRaft mode (no ZooKeeper) with replication factor 1 — appropriate for a demo; not for production.
 * The API degrades gracefully if redis or kafka are slow to start: REST, STOMP and SSE paths are resilient, and the ML client falls back to built-in heuristics.

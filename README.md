@@ -35,6 +35,9 @@ one-command deployment to Docker or Kubernetes.
 | 7 | **GIS engine** | GeoJSON feature layers (zones, roads, sensors, bins, assets, incidents, vehicles, grids) + congestion heatmap |
 | 8 | **Digital twin dashboard** | KPIs, live status ticker over SSE/STOMP, city map overlay |
 | 9 | **Cascade simulation (flagship)** | 4 failure scenarios that propagate across systems with delays & probabilities — animated timeline + DAG |
+| 10 | **Alert Center** | threshold engine over every live feed (traffic / drainage / energy / waste / roads) with severity cards + CSV export |
+| 11 | **White/Black theming** | persistent light/dark toggle — white by default, all maps & charts recolor |
+| 12 | **PWA manifest** | installable standalone window with brand colors |
 
 ## Architecture
 
@@ -63,7 +66,7 @@ Kafka topics, ML request/response bodies) is pinned in
 docker compose up --build
 ```
 
-Wait ~60 s for the API to boot and seed the Bengaluru demo dataset
+Wait ~60 s for the API to boot and seed the Dhaka demo dataset
 (8 zones, 40+ roads, 60 traffic sensors, 48 h of readings, drainage gauges,
 grids, bins, incidents, vehicles…), then open:
 
@@ -85,6 +88,16 @@ python scripts/seed.py --api-url http://localhost:8080   # stdlib, no deps
 
 Watch it on the Overview page: KPIs and the map recolor in (near) real time
 via `/api/v1/twin/live` (SSE) and `/ws` (STOMP).
+
+> **Already ran an older version?** The seeded city changed Bengaluru →
+> **Dhaka**. The seeder skips when data exists, so recreate the volume once:
+> `docker compose down -v && docker compose up --build`.
+
+### Dashboard look & theme
+
+The console boots in a clean **WHITE (light)** theme; the topbar 🌙/☀️ button
+switches to the **BLACK (dark)** theme — the choice is remembered per browser.
+All charts, maps and the cascade graph recolor with it.
 
 ### 60-second demo tour
 

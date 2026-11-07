@@ -22,7 +22,7 @@ City ──< Zone ──< Road ──< TrafficSensor ──< TrafficReading
 
 | Entity | Key fields | Notes |
 |---|---|---|
-| `City` | name, slug, population | one row per demonstration city (Bengaluru) |
+| `City` | name, slug, population | one row per demonstration city (Dhaka, Bangladesh) |
 | `Zone` | name, zone_type, `boundary geography(Polygon,4326)`, geojson cache | polygons drive map coloring; `geojson` freezes the boundary for fast GIS rendering |
 
 ## Roads & maintenance

@@ -107,7 +107,7 @@ Runs are persisted (`SimulationRun.result_json`) and replayable via
 ## 7. Cross-cutting
 
 - **Seeding**: when `app.seed.enabled=true` (dev default) the API seeds a
-  deterministic Bengaluru dataset on first boot (RNG seed 42), so any fresh
+  deterministic Dhaka dataset on first boot (RNG seed 42), so any fresh
   start demos identically.
 - **Observability**: SpringDoc OpenAPI at `/swagger-ui.html`,
   `management.endpoint.health` probes used by Docker/K8s healthchecks.

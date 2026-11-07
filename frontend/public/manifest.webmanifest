@@ -1,0 +1,17 @@
+{
+  "name": "UrbanTwin — Dhaka Digital Twin",
+  "short_name": "UrbanTwin",
+  "description": "Smart urban infrastructure & digital twin platform for Dhaka, Bangladesh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

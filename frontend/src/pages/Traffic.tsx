@@ -29,9 +29,11 @@ import {
   listTrafficSensors,
 } from '../api/traffic';
 import { fmtNum, pct } from '../lib/format';
+import { useTheme } from '../theme';
 
 export default function Traffic() {
   const [mode, setMode] = useState<'now' | 'predicted'>('now');
+  const pal = useTheme().palette;
 
   const firehoseQ = useQuery({
     queryKey: ['firehose'],
@@ -95,7 +97,7 @@ export default function Traffic() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={`px-3 py-1.5 ${mode === m ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`px-3 py-1.5 ${mode === m ? 'bg-slate-700 text-slate-50' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {m === 'now' ? 'Now' : '+30 min (ML)'}
               </button>
@@ -108,13 +110,13 @@ export default function Traffic() {
         ) : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={chartData} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-              <CartesianGrid stroke="#1e293b" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} stroke="#334155" />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} domain={[0, 1]} stroke="#334155" />
+              <CartesianGrid stroke={pal.grid} vertical={false} />
+              <XAxis dataKey="name" tick={{ fill: pal.tick, fontSize: 11 }} stroke={pal.axis} />
+              <YAxis tick={{ fill: pal.tick, fontSize: 11 }} domain={[0, 1]} stroke={pal.axis} />
               <RTooltip
                 contentStyle={{
-                  background: '#0f172a',
-                  border: '1px solid #334155',
+                  background: pal.tipBg,
+                  border: `1px solid ${pal.tipBorder}`,
                   borderRadius: 12,
                   fontSize: 12,
                 }}

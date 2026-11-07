@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { CascadeEdge, CascadeGraphData, CascadeNode } from '../types';
+import { useTheme } from '../theme';
 
 /**
  * Layered cascade graph rendered with plain SVG (no graph library):
@@ -99,6 +100,7 @@ export default function CascadeGraph({
 }) {
   const { placed, width, height } = useMemo(() => layout(cascade.nodes, cascade.edges), [cascade]);
   const posById = useMemo(() => new Map(placed.map((p) => [p.id, p])), [placed]);
+  const { palette: pal, theme } = useTheme();
 
   const visibleCount = placed.filter((p) => p.startOffsetSec <= visibleSec).length;
   const visibleIds = useMemo(
@@ -107,13 +109,21 @@ export default function CascadeGraph({
   );
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-800 bg-[repeating-linear-gradient(135deg,rgba(15,23,42,0.4)_0px,rgba(15,23,42,0.4)_12px,rgba(2,6,23,0.4)_12px,rgba(2,6,23,0.4)_24px)]">
+    <div
+      className="overflow-x-auto rounded-xl border border-slate-800"
+      style={{
+        background:
+          theme === 'dark'
+            ? 'repeating-linear-gradient(135deg,rgba(15,23,42,0.4) 0px,rgba(15,23,42,0.4) 12px,rgba(2,6,23,0.4) 12px,rgba(2,6,23,0.4) 24px)'
+            : 'repeating-linear-gradient(135deg,rgba(10,25,45,0.03) 0px,rgba(10,25,45,0.03) 12px,rgba(2,15,35,0.05) 12px,rgba(2,15,35,0.05) 24px)',
+      }}
+    >
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Cascade graph">
         {/* edges */}
         <svg />
         <defs>
           <marker id="cascade-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569" />
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={pal.tick} />
           </marker>
         </defs>
 
@@ -141,7 +151,7 @@ export default function CascadeGraph({
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke={edgeVisible ? '#64748b' : '#334155'}
+                stroke={edgeVisible ? '#64748b' : pal.grid}
                 strokeWidth={edgeVisible ? 1.6 : 1}
                 strokeDasharray="5 4"
                 markerEnd="url(#cascade-arrow)"
@@ -152,7 +162,7 @@ export default function CascadeGraph({
                 y={my - 5}
                 textAnchor="middle"
                 fontSize={10}
-                fill={edgeVisible ? '#cbd5e1' : '#475569'}
+                fill={edgeVisible ? pal.tick : pal.inkMuted}
                 opacity={opacity}
               >
                 {`${Math.round((e.probability ?? 0) * 100)}% ${e.relation ?? ''}`}
@@ -171,7 +181,7 @@ export default function CascadeGraph({
               {visible && n.severity !== undefined && (
                 <circle r={r + 7} fill="none" stroke={color} strokeOpacity={0.25} strokeWidth={2} />
               )}
-              <circle r={r} fill="#0f172a" stroke={color} strokeWidth={2.5} />
+              <circle r={r} fill={pal.slot} stroke={color} strokeWidth={2.5} />
               <text y="5" textAnchor="middle" fontSize={11} fontWeight={700} fill={color}>
                 {shortLabel(n)}
               </text>
@@ -179,18 +189,18 @@ export default function CascadeGraph({
                 y={r + 16}
                 textAnchor="middle"
                 fontSize={10.5}
-                fill="#e2e8f0"
+                fill={pal.ink}
               >
                 {clip(n.label, 22)}
               </text>
-              <text y={r + 29} textAnchor="middle" fontSize={9.5} fill="#64748b">
+              <text y={r + 29} textAnchor="middle" fontSize={9.5} fill={pal.tick}>
                 {n.type.toLowerCase()} · +{fmtOffset(n.startOffsetSec)}
               </text>
             </g>
           );
         })}
 
-        <text x={16} y={20} fontSize={11} fill="#475569">
+        <text x={16} y={20} fontSize={11} fill={pal.inkMuted}>
           {visibleCount}/{placed.length} cascade nodes triggered
         </text>
       </svg>

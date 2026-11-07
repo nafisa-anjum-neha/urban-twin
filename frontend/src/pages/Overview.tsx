@@ -12,6 +12,7 @@ import type { Zone } from '../types';
 import { parseGeometry, geometryToLatLng, riskColor, type LatLngTuple } from '../hooks/geo';
 import { useMapData } from '../hooks/useMapData';
 import { pct, timeAgo } from '../lib/format';
+import { useTheme } from '../theme';
 import type { GeoFeatureCollection } from '../types';
 
 interface Zoned {
@@ -23,6 +24,7 @@ interface Zoned {
 
 export default function Overview() {
   const { snapshot, error: liveError } = useTwinLive();
+  const pal = useTheme().palette;
   const zonesQ = useQuery({ queryKey: ['zones'], queryFn: () => listZones() });
   const { fc } = useMapData(['incidents']);
   const incidentsFc: GeoFeatureCollection | undefined = fc['incidents'];
@@ -92,7 +94,7 @@ export default function Overview() {
                 <Polygon
                   key={zone.id}
                   pathOptions={{
-                    color: '#334155',
+                    color: pal.axis,
                     weight: 1,
                     fillColor: riskColor(congestion),
                     fillOpacity: 0.28,

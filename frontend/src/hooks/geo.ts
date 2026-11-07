@@ -60,7 +60,7 @@ export function geometryToLatLng(geometry: GeoGeometry | null): LatLngTuple[] {
 /** Rough centroid of any geometry (used for zone dots / labels). */
 export function featureCenter(feature: GeoFeature): LatLngTuple {
   const pts = geometryToLatLng(parseGeometry(feature.geometry));
-  if (pts.length === 0) return [12.9716, 77.5946]; // Bengaluru fallback
+  if (pts.length === 0) return [23.8103, 90.4125]; // Dhaka fallback
   const lat = pts.reduce((s, p) => s + p[0], 0) / pts.length;
   const lng = pts.reduce((s, p) => s + p[1], 0) / pts.length;
   return [lat, lng];
@@ -88,7 +88,7 @@ export function fcBounds(fc: GeoFeatureCollection | undefined | null): LatLngTup
   ];
 }
 
-export const CITY_FALLBACK_CENTER: LatLngTuple = [12.9716, 77.5946];
+export const CITY_FALLBACK_CENTER: LatLngTuple = [23.8103, 90.4125]; // Dhaka, Bangladesh
 
 /** Diverging congestion/risk scale: emerald → amber → red (0..1). */
 export function riskColor(v: number | null | undefined): string {

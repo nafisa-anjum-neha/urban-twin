@@ -1,14 +1,25 @@
 <!doctype html>
-<html lang="en" class="dark">
+<!-- class="dark" intentionally NOT preset: the app boots WHITE by default;
+     src/theme.tsx restores a persisted choice before first paint. -->
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="UrbanTwin — Smart Urban Infrastructure & Digital Twin Platform for Bengaluru"
+      content="UrbanTwin — Smart Urban Infrastructure & Digital Twin Platform for Dhaka, Bangladesh"
     />
-    <title>UrbanTwin — Digital Twin Platform</title>
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <script>
+      // restore persisted theme before the first paint to avoid a flash
+      try {
+        if (localStorage.getItem('urbantwin.theme') === 'dark')
+          document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
+    <title>UrbanTwin — Dhaka Digital Twin</title>
   </head>
   <body>
     <div id="root"></div>

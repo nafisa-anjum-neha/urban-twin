@@ -23,6 +23,7 @@ import {
   getWaterloggingPredictions,
 } from '../api/drainage';
 import { isoDaysAgo } from '../lib/format';
+import { useTheme } from '../theme';
 import type { DrainageSensor } from '../types';
 
 const RISK_COLORS: Record<string, string> = {
@@ -34,6 +35,7 @@ const RISK_COLORS: Record<string, string> = {
 
 export default function Drainage() {
   const [sensorId, setSensorId] = useState<string>('');
+  const pal = useTheme().palette;
 
   const zonesQ = useQuery({ queryKey: ['zones'], queryFn: () => listZones() });
 
@@ -165,11 +167,11 @@ export default function Drainage() {
           ) : (
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={chartData} margin={{ top: 8, right: 12, left: -14, bottom: 0 }}>
-                <CartesianGrid stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="t" tick={{ fill: '#94a3b8', fontSize: 10 }} stroke="#334155" interval={9} />
-                <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} stroke="#334155" />
+                <CartesianGrid stroke={pal.grid} vertical={false} />
+                <XAxis dataKey="t" tick={{ fill: pal.tick, fontSize: 10 }} stroke={pal.axis} interval={9} />
+                <YAxis tick={{ fill: pal.tick, fontSize: 10 }} stroke={pal.axis} />
                 <RTooltip
-                  contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, fontSize: 12 }}
+                  contentStyle={{ background: pal.tipBg, border: `1px solid ${pal.tipBorder}`, borderRadius: 12, fontSize: 12 }}
                 />
                 <Line type="monotone" dataKey="cm" name="water (cm)" stroke="#38bdf8" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="rain" name="rain (mm)" stroke="#a78bfa" strokeWidth={1.4} dot={false} yAxisId={0} />
@@ -184,7 +186,7 @@ export default function Drainage() {
 
 function centerOf(sensors: { location?: [number, number] | null }[]): [number, number] {
   const withLoc = sensors.filter((s) => s.location);
-  if (withLoc.length === 0) return [77.5946, 12.9716];
+  if (withLoc.length === 0) return [90.4125, 23.8103]; // Dhaka fallback
   const lon = withLoc.reduce((s, x) => s + (x.location as [number, number])[0], 0) / withLoc.length;
   const lat = withLoc.reduce((s, x) => s + (x.location as [number, number])[1], 0) / withLoc.length;
   return [lat, lon];

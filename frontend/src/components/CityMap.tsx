@@ -16,7 +16,8 @@ function FitBounds({ bounds }: { bounds: LatLngBoundsExpression | null }) {
   return null;
 }
 
-/** Leaflet map with OpenStreetMap raster tiles (contract §9) on the dark theme. */
+/** Leaflet map with OpenStreetMap raster tiles (contract §9).
+ *  Styling rides on theme CSS variables; dark mode additionally dims tiles. */
 export default function CityMap({
   height = 420,
   center = CITY_FALLBACK_CENTER,
@@ -34,7 +35,7 @@ export default function CityMap({
     <MapContainer
       center={center}
       zoom={zoom}
-      style={{ height, width: '100%', background: '#0b1220' }}
+      style={{ height, width: '100%', background: 'var(--map-bg)' }}
       scrollWheelZoom
       className="rounded-xl border border-slate-800 z-0"
     >

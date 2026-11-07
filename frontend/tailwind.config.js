@@ -1,17 +1,34 @@
 /** @type {import('tailwindcss').Config} */
+// The slate ramp resolves to CSS variables so the whole chrome can flip
+// between the default WHITE (light) theme and the BLACK (dark) theme with a
+// single class on <html> (see src/theme.tsx). Values live in index.css.
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
+        slate: {
+          50: 'rgb(var(--st-50) / <alpha-value>)',
+          100: 'rgb(var(--st-100) / <alpha-value>)',
+          200: 'rgb(var(--st-200) / <alpha-value>)',
+          300: 'rgb(var(--st-300) / <alpha-value>)',
+          400: 'rgb(var(--st-400) / <alpha-value>)',
+          500: 'rgb(var(--st-500) / <alpha-value>)',
+          600: 'rgb(var(--st-600) / <alpha-value>)',
+          700: 'rgb(var(--st-700) / <alpha-value>)',
+          800: 'rgb(var(--st-800) / <alpha-value>)',
+          900: 'rgb(var(--st-900) / <alpha-value>)',
+          950: 'rgb(var(--st-950) / <alpha-value>)',
+        },
         surface: {
-          DEFAULT: '#0f172a',
-          raised: '#111c31',
-          border: '#1e293b',
+          DEFAULT: 'var(--surface)',
+          raised: 'var(--surface-raised)',
+          border: 'var(--surface-border)',
         },
       },
       boxShadow: {
-        card: '0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -12px rgb(0 0 0 / 0.6)',
+        card: 'var(--shadow-card)',
       },
       keyframes: {
         'pulse-dot': {

@@ -26,7 +26,7 @@ export default function Panel({
         <div className="flex items-start justify-between gap-4 px-5 pt-4 pb-3">
           <div className="min-w-0">
             {title && (
-              <h2 className="text-sm font-semibold text-white tracking-tight">{title}</h2>
+              <h2 className="text-sm font-semibold text-slate-50 tracking-tight">{title}</h2>
             )}
             {subtitle && <p className="text-[11px] text-slate-500 mt-0.5">{subtitle}</p>}
           </div>

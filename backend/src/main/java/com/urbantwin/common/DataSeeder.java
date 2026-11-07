@@ -51,9 +51,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Seeds the demo city (Bengaluru) with zones, roads, sensors, grids, bins,
- * vehicles and 48 h of diurnal telemetry so the dashboard and the cascade
- * simulator have meaningful data on first boot. Enable with app.seed.enabled.
+ * Seeds the demo city (Dhaka, Bangladesh) with zones, roads, sensors, grids,
+ * bins, vehicles and 48 h of diurnal telemetry so the dashboard and the
+ * cascade simulator have meaningful data on first boot. Enable with
+ * app.seed.enabled.
  */
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -61,27 +62,31 @@ public class DataSeeder implements CommandLineRunner {
 
     record ZoneSeed(String name, String type, double lat, double lon, double radiusKm) {}
 
+    /** Dhaka neighborhoods — the twin's default constellation. */
     private static final List<ZoneSeed> ZONE_SEEDS = List.of(
-            new ZoneSeed("Whitefield", "commercial", 12.9698, 77.75, 2.6),
-            new ZoneSeed("Indiranagar", "mixed", 12.9784, 77.6408, 1.6),
-            new ZoneSeed("Koramangala", "commercial", 12.9352, 77.6245, 1.8),
-            new ZoneSeed("Jayanagar", "residential", 12.9250, 77.5938, 1.7),
-            new ZoneSeed("Hebbal", "mixed", 13.0358, 77.5970, 2.0),
-            new ZoneSeed("Yelahanka", "industrial", 13.1007, 77.5963, 2.4),
-            new ZoneSeed("Electronic City", "commercial", 12.8452, 77.6602, 2.6),
-            new ZoneSeed("KR Puram", "industrial", 13.0077, 77.6769, 2.2));
+            new ZoneSeed("Gulshan", "commercial", 23.7925, 90.4125, 1.4),
+            new ZoneSeed("Banani", "commercial", 23.7898, 90.4012, 1.3),
+            new ZoneSeed("Dhanmondi", "residential", 23.7461, 90.3760, 1.8),
+            new ZoneSeed("Mirpur", "mixed", 23.8069, 90.3667, 2.2),
+            new ZoneSeed("Uttara", "mixed", 23.8759, 90.3795, 2.4),
+            new ZoneSeed("Motijheel", "commercial", 23.7333, 90.4127, 1.5),
+            new ZoneSeed("Rampura", "mixed", 23.7679, 90.4248, 1.7),
+            new ZoneSeed("Mohammadpur", "residential", 23.7640, 90.3596, 1.9),
+            new ZoneSeed("Tejgaon", "industrial", 23.7568, 90.3972, 1.8),
+            new ZoneSeed("Kurmitola", "mixed", 23.8550, 90.4010, 1.9));
 
     private static final String[] ROAD_NAMES = {
-            "Ring Road", "Main Road", "Artery Road", "Orchard Cross", "Mission Street",
-            "Lake View Road", "Tech Park Avenue", "Station Road"};
+            "Progoti Sarani", "Airport Road", "Mirpur Road", "Sonargaon Road",
+            "Kazi Nazrul Islam Avenue", "Bangla Motor Road", "Begum Rokeya Sarani",
+            "Shahid Tajuddin Ahmed Sarani"};
 
     private static final String[] ASSET_TYPES = {"streetlight", "water_main", "pump", "transformer", "signal"};
     private static final String[] REPORT_TEXTS = {
-            "Street light flickering near the bus stop.",
-            "Pothole cluster after the resurfacing patch eroded.",
-            "Water seepage along the compound wall.",
-            "Garbage pickup missed for the second day.",
-            "Underpass floods within minutes of heavy rain.",
+            "Streetlight pole leaning after the last evening storm.",
+            "Deep pothole cluster on the rickshaw lane after rain.",
+            "Open drainage cover overflowing during the downpour.",
+            "Garbage van missed pickup for the second day near the bazar.",
+            "Waterlogged underpass at Airport Road during the monsoon.",
     };
 
     private final CityRepository cities;
@@ -144,14 +149,14 @@ public class DataSeeder implements CommandLineRunner {
             return;
         }
         log.info("Seeding UrbanTwin demo city…");
-        City bengaluru = new City();
-        bengaluru.setName("Bengaluru");
-        bengaluru.setSlug("bengaluru");
-        bengaluru.setPopulation(13_600_000);
-        cities.save(bengaluru);
+        City dhaka = new City();
+        dhaka.setName("Dhaka");
+        dhaka.setSlug("dhaka");
+        dhaka.setPopulation(22_500_000);
+        cities.save(dhaka);
 
         Random rng = new Random(7L);
-        List<Zone> created = seedZones(bengaluru);
+        List<Zone> created = seedZones(dhaka);
         List<Road> createdRoads = seedRoads(created, rng);
         seedIntersections(created, rng);
         seedTraffic(createdRoads, rng);
@@ -459,7 +464,7 @@ public class DataSeeder implements CommandLineRunner {
             var c = z.getBoundary().getCentroid();
             return new double[]{c.getY(), c.getX()};
         }
-        return new double[]{12.9716, 77.5946};
+        return new double[]{23.8103, 90.4125}; // Dhaka center fallback
     }
 
     private static org.locationtech.jts.geom.LineString roadPath(Zone z, int i, Random rng) {

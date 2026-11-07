@@ -18,8 +18,10 @@ import { LoadingState, ErrorState, EmptyState } from '../components/States';
 import StatusBadge from '../components/StatusBadge';
 import { getEnergySummary, listGrids, listGridReadings } from '../api/energy';
 import { fmtNum, isoDaysAgo } from '../lib/format';
+import { useTheme } from '../theme';
 
 export default function Energy() {
+  const pal = useTheme().palette;
   const [gridId, setGridId] = useState('');
   const summaryQ = useQuery({ queryKey: ['energy-summary'], queryFn: getEnergySummary, refetchInterval: 30_000 });
   const gridsQ = useQuery({ queryKey: ['grids'], queryFn: () => listGrids() });
@@ -63,10 +65,10 @@ export default function Energy() {
                 data={summary.map((z) => ({ name: z.name, current: z.currentKw, peak: z.peakKw24h }))}
                 margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
               >
-                <CartesianGrid stroke="#1e293b" vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} stroke="#334155" />
-                <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} stroke="#334155" />
-                <RTooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, fontSize: 12 }} />
+                <CartesianGrid stroke={pal.grid} vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: pal.tick, fontSize: 11 }} stroke={pal.axis} />
+                <YAxis tick={{ fill: pal.tick, fontSize: 11 }} stroke={pal.axis} />
+                <RTooltip contentStyle={{ background: pal.tipBg, border: `1px solid ${pal.tipBorder}`, borderRadius: 12, fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
                 <Bar dataKey="current" name="Now (kW)" fill="#facc15" radius={[6, 6, 0, 0]} />
                 <Bar dataKey="peak" name="24 h peak" fill="#f472b6" radius={[6, 6, 0, 0]} />
@@ -112,10 +114,10 @@ export default function Energy() {
         ) : (
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={readings} margin={{ top: 8, right: 12, left: -6, bottom: 0 }}>
-              <CartesianGrid stroke="#1e293b" vertical={false} />
-              <XAxis dataKey="t" tick={{ fill: '#94a3b8', fontSize: 10 }} stroke="#334155" interval={7} />
-              <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} stroke="#334155" />
-              <RTooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, fontSize: 12 }} />
+              <CartesianGrid stroke={pal.grid} vertical={false} />
+              <XAxis dataKey="t" tick={{ fill: pal.tick, fontSize: 10 }} stroke={pal.axis} interval={7} />
+              <YAxis tick={{ fill: pal.tick, fontSize: 10 }} stroke={pal.axis} />
+              <RTooltip contentStyle={{ background: pal.tipBg, border: `1px solid ${pal.tipBorder}`, borderRadius: 12, fontSize: 12 }} />
               <Line type="monotone" dataKey="kw" name="kW" stroke="#facc15" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
