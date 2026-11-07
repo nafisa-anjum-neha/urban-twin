@@ -49,6 +49,13 @@ def health() -> HealthResponse:
     )
 
 
+@app.get("/health", response_model=HealthResponse, include_in_schema=False)
+def health_alias() -> HealthResponse:
+    """Conventional liveness path — identical payload to /ml/v1/health so
+    standard probes / orchestrator health checks don't 404."""
+    return health()
+
+
 @app.post(
     "/ml/v1/predict/congestion",
     response_model=CongestionResponse,
