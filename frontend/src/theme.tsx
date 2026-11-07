@@ -18,7 +18,11 @@ export type Theme = 'light' | 'dark';
 const STORAGE_KEY = 'urbantwin.theme';
 
 function initial(): Theme {
+  // 1. explicit URL override(?theme=dark / ?theme=light) — useful for demos
   try {
+    const q = new URLSearchParams(window.location.search).get('theme');
+    if (q === 'dark' || q === 'light') return q;
+    // 2. persisted choice
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'dark' || saved === 'light') return saved;
   } catch {

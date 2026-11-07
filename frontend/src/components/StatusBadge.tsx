@@ -6,12 +6,16 @@ export type BadgeState = 'emerald' | 'amber' | 'red' | 'slate' | 'sky' | 'violet
  * emerald = healthy/resolved/available.
  */
 const CLASSES: Record<BadgeState, string> = {
-  emerald: 'bg-emerald-950/70 text-emerald-300 border-emerald-800',
-  amber: 'bg-amber-950/70 text-amber-300 border-amber-800',
-  red: 'bg-red-950/70 text-red-300 border-red-800',
-  slate: 'bg-slate-800/80 text-slate-300 border-slate-700',
-  sky: 'bg-sky-950/70 text-sky-300 border-sky-800',
-  violet: 'bg-violet-950/70 text-violet-300 border-violet-800',
+  emerald:
+    'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800',
+  amber:
+    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800',
+  red: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800',
+  slate:
+    'bg-slate-100 text-slate-600 border-slate-300 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700',
+  sky: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-800',
+  violet:
+    'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/70 dark:text-violet-300 dark:border-violet-800',
 };
 
 const RED = new Set([

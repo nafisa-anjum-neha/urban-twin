@@ -100,16 +100,16 @@ export default function Topbar() {
 /** ML inference tier chip: which backend (tf / sklearn / heuristic) is serving. */
 function MlChip({ tier, loading }: { tier: string | undefined; loading: boolean }) {
   const style = loading
-    ? { label: 'ML …', cls: 'border-slate-800 bg-slate-950/60 text-slate-500' }
+    ? { label: 'ML …', cls: 'border-slate-300 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-500' }
     : tier
       ? {
           label: `ML ${tier}`,
           cls:
             tier === 'tensorflow' || tier === 'sklearn'
-              ? 'border-emerald-800 bg-emerald-950/40 text-emerald-300'
-              : 'border-amber-800 bg-amber-950/40 text-amber-300',
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+              : 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
         }
-      : { label: 'ML down', cls: 'border-slate-800 bg-slate-950/60 text-slate-500' };
+      : { label: 'ML down', cls: 'border-slate-300 bg-slate-50 text-slate-500 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-500' };
   return (
     <span className={`hidden md:inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${style.cls}`}>
       {style.label}
