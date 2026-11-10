@@ -111,8 +111,25 @@ export interface City {
   id: UUID;
   name: string;
   slug: string;
-  population: number;
-  zoneCount: number;
+  country?: string;
+  /** Regional-indicator emoji rendered anywhere the city is named */
+  flag?: string;
+  population?: number;
+  zoneCount?: number;
+}
+
+/** One row of `GET /twin/compare` — cross-city KPI snapshot. */
+export interface CityCompareRow {
+  cityId: UUID;
+  name: string;
+  slug?: string;
+  flag?: string;
+  country?: string;
+  zones: number;
+  avgCongestion: number;
+  activeIncidents: number;
+  openMaintenance: number;
+  binsOverfull: number;
 }
 
 export interface Zone {
@@ -466,7 +483,7 @@ export interface TwinTotals {
 }
 
 export interface TwinState {
-  city: { id: UUID; name: string };
+  city: { id: UUID; name: string; flag?: string; country?: string };
   zones: TwinZoneState[];
   totals: TwinTotals;
   updatedAt: string;

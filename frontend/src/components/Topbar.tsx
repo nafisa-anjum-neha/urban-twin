@@ -3,6 +3,7 @@ import { fmtClock, fmtNum, pct } from '../lib/format';
 import { useTheme } from '../theme';
 import { useQuery } from '@tanstack/react-query';
 import StatusBadge from './StatusBadge';
+import CitySwitcher from './CitySwitcher';
 
 const NET_STATE: Record<string, 'emerald' | 'amber' | 'red'> = {
   ok: 'emerald',
@@ -57,17 +58,23 @@ export default function Topbar() {
 
   return (
     <header className="h-16 shrink-0 border-b border-slate-800 bg-slate-950/80 backdrop-blur flex items-center gap-6 px-6">
-      <div className="min-w-0">
-        <div className="text-sm font-semibold text-slate-50 truncate">
-          {snapshot?.city?.name ?? 'UrbanTwin'} · Cross-service twin
+      <div className="min-w-0 flex items-center gap-4">
+        <div>
+          <div className="text-sm font-semibold text-slate-50 truncate">
+            {(snapshot?.city?.flag ? snapshot.city.flag + ' ' : '') +
+              (snapshot?.city?.name ?? 'UrbanTwin')}{' '}
+            · Cross-service twin
+          </div>
+          <div className="text-[11px] text-slate-500">
+            {snapshot?.city?.country ? snapshot.city.country + ' · ' : ''}
+            {error
+              ? `Feed error: ${error}`
+              : `Last snapshot ${fmtClock(lastUpdateMs)}${
+                  snapshot?.totals?.dataFreshness ? ` · freshness ${snapshot.totals.dataFreshness}` : ''
+                }`}
+          </div>
         </div>
-        <div className="text-[11px] text-slate-500">
-          {error
-            ? `Feed error: ${error}`
-            : `Last snapshot ${fmtClock(lastUpdateMs)}${
-                snapshot?.totals?.dataFreshness ? ` · freshness ${snapshot.totals.dataFreshness}` : ''
-              }`}
-        </div>
+        <CitySwitcher />
       </div>
 
       <div className="ml-auto flex items-center gap-5">

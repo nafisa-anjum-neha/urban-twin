@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
+import { CityProvider } from './api/city';
 import { TwinLiveProvider } from './hooks/useTwinLive';
 import './index.css';
 
@@ -20,9 +21,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <TwinLiveProvider>
-          <App />
-        </TwinLiveProvider>
+        <CityProvider>
+          <TwinLiveProvider>
+            <App />
+          </TwinLiveProvider>
+        </CityProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,

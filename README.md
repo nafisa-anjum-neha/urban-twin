@@ -37,7 +37,8 @@ one-command deployment to Docker or Kubernetes.
 | 9 | **Cascade simulation (flagship)** | 4 failure scenarios that propagate across systems with delays & probabilities — animated timeline + DAG |
 | 10 | **Alert Center** | threshold engine over every live feed (traffic / drainage / energy / waste / roads) with severity cards + CSV export |
 | 11 | **White/Black theming** | persistent light/dark toggle — white by default, all maps & charts recolor |
-| 12 | **PWA manifest** | installable standalone window with brand colors |
+| 12 | **Multi-city switching** | country/city selector (🇧🇩 Dhaka · 🇮🇳 Kolkata · 🇮🇳 Mumbai · 🇸🇬 Singapore · 🇯🇵 Tokyo) — every page, chart & map re-scopes; `City Comparison` page ranks all cities side by side |
+| 13 | **PWA manifest** | installable standalone window with brand colors |
 
 ## Architecture
 
@@ -98,6 +99,16 @@ via `/api/v1/twin/live` (SSE) and `/ws` (STOMP).
 The console boots in a clean **WHITE (light)** theme; the topbar 🌙/☀️ button
 switches to the **BLACK (dark)** theme — the choice is remembered per browser.
 All charts, maps and the cascade graph recolor with it.
+
+### Choosing a country / city
+
+The topbar has a **country selector** (flag + city name). Picking a city
+instantly re-scopes every page — KPIs, charts, maps (they auto-fit to the new
+city), alerts and even the live SSE — the choice is remembered per browser.
+`?city=<slug>` in the URL overrides it (e.g. `/traffic?city=mumbai`). The
+**City Comparison** page ranks all cities by congestion/incidents and switching
+is one click from any row. The Spring backend serves one city per deployment
+out of the box; the no-Docker mock (`scripts/mock_api_full.py`) ships all five.
 
 ### 60-second demo tour
 
@@ -160,7 +171,19 @@ frontend/         React 18 + Vite + TS — 9-page twin console + Leaflet maps
 docs/             CONTRACT.md (authoritative interface spec)
 deploy/k8s/       Kubernetes manifests + README
 scripts/seed.py   live telemetry seeder (stdlib only)
+scripts/mock_api_full.py  multi-city mock API for NO-Docker demo runs (stdlib only)
 docker-compose.yml  one-command full stack
+```
+
+## Demo without Docker
+
+`scripts/mock_api_full.py` serves the entire REST surface (plus `/twin/live`
+SSE) for **five cities** with live diurnal telemetry — stdlib only:
+
+```bash
+python scripts/mock_api_full.py        # → :8080
+cd frontend && npm run dev             # → :5173 (proxies /api and /ml)
+cd ml-service && .venv/Scripts/python -m uvicorn app.main:app --port 8000
 ```
 
 ## Documentation

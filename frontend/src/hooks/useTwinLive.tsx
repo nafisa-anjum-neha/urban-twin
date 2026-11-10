@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { API_URL } from '../api/client';
+import { useCity } from '../api/city';
 import { getTwinState } from '../api/twin';
 import type { TwinState } from '../types';
 
@@ -34,6 +35,7 @@ const TwinLiveContext = createContext<TwinLiveValue>({
  * `GET /twin/state` every 10 s. WebSocket `/ws` is intentionally skipped.
  */
 export function TwinLiveProvider({ children }: { children: ReactNode }) {
+  const { cityId } = useCity();
   const [snapshot, setSnapshot] = useState<TwinState | null>(null);
   const [mode, setMode] = useState<LiveMode>('connecting');
   const [lastUpdateMs, setLastUpdateMs] = useState<number | null>(null);
@@ -90,7 +92,9 @@ export function TwinLiveProvider({ children }: { children: ReactNode }) {
 
     let es: EventSource | null = null;
     try {
-      es = new EventSource(`${new URL(API_URL, window.location.href).toString().replace(/\/$/, '')}/twin/live`);
+      const url = new URL(`${API_URL}/twin/live`, window.location.href);
+      if (cityId) url.searchParams.set('cityId', cityId);
+      es = new EventSource(url.toString());
     } catch {
       es = null;
       startPolling();
@@ -150,7 +154,7 @@ export function TwinLiveProvider({ children }: { children: ReactNode }) {
       stopPolling();
       es?.close();
     };
-  }, [applySnapshot]);
+  }, [applySnapshot, cityId]);
 
   return (
     <TwinLiveContext.Provider value={{ snapshot, mode, lastUpdateMs, error }}>

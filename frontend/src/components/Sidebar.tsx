@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom';
+import { useCity } from '../api/city';
 
 const NAV = [
   { to: '/', label: 'Digital Twin', icon: '🌐' },
+  { to: '/cities', label: 'City Comparison', icon: '🗺️' },
   { to: '/alerts', label: 'Alert Center', icon: '🔔' },
   { to: '/traffic', label: 'Traffic', icon: '🚦' },
   { to: '/roads', label: 'Roads', icon: '🛣️' },
@@ -14,6 +16,7 @@ const NAV = [
 ];
 
 export default function Sidebar() {
+  const { city } = useCity();
   return (
     <aside className="w-60 shrink-0 border-r border-slate-800 bg-slate-950/80 flex flex-col">
       <div className="px-5 py-5 border-b border-slate-800">
@@ -26,7 +29,7 @@ export default function Sidebar() {
               UrbanTwin
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
-              Dhaka digital twin
+              {city ? `City twin · ${city.name}` : 'Multi-city digital twin'}
             </div>
           </div>
         </div>
